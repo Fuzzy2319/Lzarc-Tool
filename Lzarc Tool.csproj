@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <SelfContained>true</SelfContained>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+        <Deterministic>False</Deterministic>
+        <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <WarningLevel>9999</WarningLevel>
+        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        <StartupObject>LzarcTool.Program</StartupObject>
+        <Platforms>ARM32;ARM64;x64;x86</Platforms>
+        <PlatformTarget>$(Plateform)</PlatformTarget>
+        <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;linux-arm;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
+        <AssemblyName>Lzarc_Tool</AssemblyName>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugType>None</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include=".editorconfig"/>
+        <None Include=".gitignore"/>
+        <None Include="LICENSE"/>
+        <None Include="README.md"/>
+        <None Include="Properties/*"/>
+        <None Include="src/*"/>
+        <None Include="assets/*"/>
+    </ItemGroup>
+
+</Project>
