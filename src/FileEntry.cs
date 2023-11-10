@@ -55,9 +55,10 @@ namespace Lzarc_Tool
             this.decompressedSize = reader.ReadUInt32();
 
             pos = reader.BaseStream.Position;
+            reader.BaseStream.Seek(this.dataPos, SeekOrigin.Begin);
             reader.BaseStream.Seek(8, SeekOrigin.Current);
             this.fileData = reader.ReadBytes((int)this.compressedSize - 8);
-            //TODO: deflate data
+            this.fileData = LZ77.Decompress(this.fileData, (int)this.decompressedSize);
             reader.BaseStream.Seek(pos, SeekOrigin.Begin);
         }
     }

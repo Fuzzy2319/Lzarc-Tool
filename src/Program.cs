@@ -12,7 +12,8 @@ namespace LzarcTool {
                 return;
             }
             switch (args[0].Trim().ToLower()) {
-                case "list":
+                case "-l":
+                case "--list":
                     if (args.Length < 2) {
                         Console.WriteLine("Error: Not enough arguments");
                         Program.DisplayHelp();
@@ -20,6 +21,17 @@ namespace LzarcTool {
                         return;
                     }
                     Program.ListFiles(args[1]);
+                    break;
+                case "-x":
+                case "--extract":
+                    if (args.Length < 3)
+                    {
+                        Console.WriteLine("Error: Not enough arguments");
+                        Program.DisplayHelp();
+
+                        return;
+                    }
+                    Program.ExtractFiles(args[1], args[2]);
                     break;
                 default:
                     Program.DisplayHelp();
@@ -54,6 +66,37 @@ namespace LzarcTool {
                 Console.WriteLine($"File name: {file.FileName}");
                 Console.WriteLine($"File compressed size: {file.CompressedSize}");
                 Console.WriteLine($"File decompressed size: {file.DecompressedSize}");
+            }
+        }
+
+        static void ExtractFiles(string filePath, string outDirectory) {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("Error: Specified file doesn't exist");
+
+                return;
+            }
+
+            Stream stream = File.OpenRead(filePath);
+            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
+            LzarcFile lzarcFile = new LzarcFile();
+            lzarcFile.Read(reader);
+            reader.Dispose();
+
+            if (!Directory.Exists(outDirectory))
+            {
+                Directory.CreateDirectory(outDirectory);
+            }
+
+            foreach (FileEntry file in lzarcFile.Files)
+            {
+                string path = Path.Combine(outDirectory, file.FileName);
+                string? dir = Path.GetDirectoryName(path);
+                if (dir != null && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.WriteAllBytes(path, file.FileData);
             }
         }
     }
