@@ -1,3 +1,5 @@
+using Lzarc_Tool;
+
 namespace LzarcTool {
     internal static class Program
     {
@@ -32,7 +34,27 @@ namespace LzarcTool {
 
         static void ListFiles(string filePath)
         {
-            throw new NotImplementedException();
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("Error: Specified file doesn't exist");
+
+                return;
+            }
+
+            Stream stream = File.OpenRead(filePath);
+            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
+            LzarcFile lzarcFile = new LzarcFile();
+            lzarcFile.Read(reader);
+            reader.Dispose();
+
+            Console.WriteLine($"Found: {lzarcFile.FileCount} file(s) in this archive.");
+            foreach (FileEntry file in lzarcFile.Files)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"File name: {file.FileName}");
+                Console.WriteLine($"File compressed size: {file.CompressedSize}");
+                Console.WriteLine($"File decompressed size: {file.DecompressedSize}");
+            }
         }
     }
 }

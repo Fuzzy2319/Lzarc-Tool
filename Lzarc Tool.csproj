@@ -19,7 +19,8 @@
         <PlatformTarget>$(Plateform)</PlatformTarget>
         <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;linux-arm;osx-x64;osx-arm64</RuntimeIdentifiers>
         <RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
-        <AssemblyName>Lzarc_Tool</AssemblyName>
+        <AssemblyName>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -31,13 +32,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include=".editorconfig"/>
-        <None Include=".gitignore"/>
-        <None Include="LICENSE"/>
-        <None Include="README.md"/>
-        <None Include="Properties/*"/>
-        <None Include="src/*"/>
-        <None Include="assets/*"/>
+        <None Include=".editorconfig" />
+        <None Include=".gitignore" />
+        <None Include="LICENSE" />
+        <None Include="README.md" />
+        <None Include="Properties/*" />
+        <None Include="test_assets/*" />
+        <Compile Include="src/**" />
+        <None Include="assets/*" />
     </ItemGroup>
 
 </Project>
