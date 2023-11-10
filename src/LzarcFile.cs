@@ -2,20 +2,23 @@ namespace Lzarc_Tool
 {
     public class LzarcFile
     {
-        private uint fileSize;
-        private uint alignedSize;
+        private const uint COMPRESSED_ALIGNEMENT = 64; // Compressed data is 64 bits aligned
+        private const uint DECOMPRESSED_ALIGNEMENT = 8192; // Decompressed data is 8KiB aligned
+        private const uint ENTRY_SIZE = 148; // Every file entry is 148 bits
+        private const uint HEADER_SIZE = 12; // Header is 12 bits
+
         private List<FileEntry> files;
         public LzarcFile() {
             this.files = new List<FileEntry>();
-            this.fileSize = 0;
-            this.alignedSize = 0;
         }
 
         public uint FileSize {
-            get => this.fileSize;
+            get => (uint)this.files.Sum(file => this.CalcAlignedSize(file.CompressedSize, LzarcFile.COMPRESSED_ALIGNEMENT))
+                + this.CalcAlignedSize(LzarcFile.HEADER_SIZE + (LzarcFile.ENTRY_SIZE * this.FileCount), LzarcFile.COMPRESSED_ALIGNEMENT);
         }
-        public uint AlignedSize {
-            get => this.alignedSize;
+        public uint DecompressedSize {
+            get => (uint)this.files.Sum(file => this.CalcAlignedSize(file.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNEMENT, LzarcFile.DECOMPRESSED_ALIGNEMENT))
+                + LzarcFile.DECOMPRESSED_ALIGNEMENT;
         }
         public uint FileCount {
             get => (uint)this.files.Count;
@@ -24,10 +27,15 @@ namespace Lzarc_Tool
             get => this.files;
         }
 
+        private uint CalcAlignedSize(uint len, uint alignement)
+        {
+            return (len + (alignement - 1) & ~(alignement - 1));
+        }
+
         public void Read(BigEndianBinaryReader reader)
         {
-            this.fileSize = reader.ReadUInt32();
-            this.alignedSize = reader.ReadUInt32();
+            // Skip FileSize && DecompressedSize
+            reader.BaseStream.Seek(sizeof(uint) * 2, SeekOrigin.Current);
             uint fileCount = reader.ReadUInt32();
 
             for (int i = 0; i < fileCount; i++)
