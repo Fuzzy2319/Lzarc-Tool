@@ -90,6 +90,7 @@ namespace LzarcTool {
 
             foreach (FileEntry file in lzarcFile.Files)
             {
+                Console.WriteLine($"Extracting {file.FileName}...");
                 string path = Path.Combine(outDirectory, file.FileName);
                 string? dir = Path.GetDirectoryName(path);
                 if (dir != null && !Directory.Exists(dir))
@@ -98,6 +99,8 @@ namespace LzarcTool {
                 }
                 File.WriteAllBytes(path, file.FileData);
             }
+
+            Console.WriteLine("Extraction done.");
         }
     }
 }

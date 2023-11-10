@@ -4,13 +4,11 @@ namespace Lzarc_Tool
     {
         private uint fileSize;
         private uint alignedSize;
-        private uint fileCount;
         private List<FileEntry> files;
         public LzarcFile() {
             this.files = new List<FileEntry>();
             this.fileSize = 0;
             this.alignedSize = 0;
-            this.fileCount = 0;
         }
 
         public uint FileSize {
@@ -20,7 +18,7 @@ namespace Lzarc_Tool
             get => this.alignedSize;
         }
         public uint FileCount {
-            get => this.fileCount;
+            get => (uint)this.files.Count;
         }
         public List<FileEntry> Files {
             get => this.files;
@@ -30,7 +28,7 @@ namespace Lzarc_Tool
         {
             this.fileSize = reader.ReadUInt32();
             this.alignedSize = reader.ReadUInt32();
-            this.fileCount = reader.ReadUInt32();
+            uint fileCount = reader.ReadUInt32();
 
             for (int i = 0; i < fileCount; i++)
             {
