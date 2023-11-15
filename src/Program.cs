@@ -1,6 +1,5 @@
-using Lzarc_Tool;
-
-namespace LzarcTool {
+namespace LzarcTool
+{
     internal static class Program
     {
         static void Main(string[] args)

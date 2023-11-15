@@ -1,4 +1,4 @@
-namespace Lzarc_Tool
+namespace LzarcTool
 {
     public class FileEntry
     {
