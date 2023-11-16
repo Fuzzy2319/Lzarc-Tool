@@ -1,4 +1,4 @@
-namespace LzarcTool
+namespace LzarcTool.Compressor
 {
     public class LZ77
     {
@@ -27,13 +27,13 @@ namespace LzarcTool
                 flags = input[inputOffset++];
                 for (i = 0; i < 8 && curr_size < decomp_size; i++)
                 {
-                    flag = (flags & (0x80 >> i)) > 0;
+                    flag = (flags & 0x80 >> i) > 0;
                     if (flag)
                     {
                         if (inputOffset > input.Length) break;
                         b1 = input[inputOffset++];
 
-                        switch ((int)(b1 >> 4))
+                        switch (b1 >> 4)
                         {
                             //#region case 0
                             case 0:
@@ -73,7 +73,7 @@ namespace LzarcTool
 
                                     len = (b1 & 0xF) << 12; // len = b000
                                     len |= bt << 4; // len = bcd0
-                                    len |= (b2 >> 4); // len = bcde
+                                    len |= b2 >> 4; // len = bcde
                                     len += 0x111; // len = bcde + 0x111
                                     disp = (b2 & 0x0F) << 8; // disp = f
                                     disp |= b3; // disp = fgh
@@ -102,7 +102,7 @@ namespace LzarcTool
                         }
 
                         if (disp > curr_size)
-                            return new byte[] {};
+                            return new byte[] { };
 
                         cdest = curr_size;
 
@@ -130,10 +130,9 @@ namespace LzarcTool
             return outdata;
         }
 
-        public static byte[] Compress(byte[] input, out int compressedSize)
+        public static byte[] Compress(byte[] input)
         {
             //TODO: Add LZ77 Compression
-            compressedSize = input.Length;
             return input;
         }
     }

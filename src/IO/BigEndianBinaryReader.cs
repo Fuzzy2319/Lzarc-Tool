@@ -1,7 +1,7 @@
 using System.Buffers.Binary;
 using System.Text;
 
-namespace LzarcTool
+namespace LzarcTool.IO
 {
     public class BigEndianBinaryReader : BinaryReader
     {

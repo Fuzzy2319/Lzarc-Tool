@@ -1,3 +1,7 @@
+using LzarcTool.Compressor;
+using LzarcTool.FileFormat;
+using LzarcTool.IO;
+
 namespace LzarcTool
 {
     internal static class Program
@@ -45,18 +49,11 @@ namespace LzarcTool
 
         static void ListFiles(string filePath)
         {
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("Error: Specified file doesn't exist");
+            LzarcFile? lzarcFile = Program.ReadFromFile(filePath);
 
+            if (lzarcFile == null) {
                 return;
             }
-
-            Stream stream = File.OpenRead(filePath);
-            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
-            LzarcFile lzarcFile = new LzarcFile();
-            lzarcFile.Read(reader);
-            reader.Dispose();
 
             Console.WriteLine($"Found: {lzarcFile.FileCount} file(s) in this archive.");
             foreach (FileEntry file in lzarcFile.Files)
@@ -69,18 +66,12 @@ namespace LzarcTool
         }
 
         static void ExtractFiles(string filePath, string outDirectory) {
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("Error: Specified file doesn't exist");
+            LzarcFile? lzarcFile = Program.ReadFromFile(filePath);
 
+            if (lzarcFile == null)
+            {
                 return;
             }
-
-            Stream stream = File.OpenRead(filePath);
-            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
-            LzarcFile lzarcFile = new LzarcFile();
-            lzarcFile.Read(reader);
-            reader.Dispose();
 
             if (!Directory.Exists(outDirectory))
             {
@@ -96,10 +87,57 @@ namespace LzarcTool
                 {
                     Directory.CreateDirectory(dir);
                 }
-                File.WriteAllBytes(path, file.FileData);
+                File.WriteAllBytes(path, file.DecompressedFileData);
             }
 
             Console.WriteLine("Extraction done.");
+        }
+
+        static LzarcFile? ReadFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("Error: Specified file doesn't exist");
+
+                return null;
+            }
+
+            Stream stream = File.OpenRead(filePath);
+            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
+            LzarcFile lzarcFile = new LzarcFile();
+
+            // Skip FileSize && DecompressedSize
+            reader.BaseStream.Seek(sizeof(uint) * 2, SeekOrigin.Current);
+            uint fileCount = reader.ReadUInt32();
+
+            for (int i = 0; i < fileCount; i++)
+            {
+                FileEntry entry = new FileEntry();
+
+                long pos = reader.BaseStream.Position;
+                entry.FileName = reader.ReadString();
+                reader.BaseStream.Seek(pos + 128, SeekOrigin.Begin);
+                uint dataPos = reader.ReadUInt32();
+                uint compressedDataSize = reader.ReadUInt32();
+                //uint decompressedPos = reader.ReadUInt32();
+                //uint ukn = reader.ReadUInt32();
+                // Skip DecompressedPos && Ukn
+                reader.BaseStream.Seek(sizeof(uint) * 2, SeekOrigin.Current);
+                uint decompressedSize = reader.ReadUInt32();
+
+                pos = reader.BaseStream.Position;
+                reader.BaseStream.Seek(dataPos, SeekOrigin.Begin);
+                reader.BaseStream.Seek(8, SeekOrigin.Current);
+                entry.CompressedFileData = reader.ReadBytes((int)compressedDataSize - 8);
+                entry.DecompressedFileData = LZ77.Decompress(entry.CompressedFileData, (int)decompressedSize);
+                reader.BaseStream.Seek(pos, SeekOrigin.Begin);
+
+                lzarcFile.Files.Add(entry);
+            }
+
+            reader.Dispose();
+
+            return lzarcFile;
         }
     }
 }
