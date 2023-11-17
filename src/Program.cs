@@ -1,4 +1,4 @@
-using LzarcTool.Compressor;
+using LzarcTool.Compression;
 using LzarcTool.FileFormat;
 using LzarcTool.IO;
 
@@ -35,6 +35,17 @@ namespace LzarcTool
                         return;
                     }
                     Program.ExtractFiles(args[1], args[2]);
+                    break;
+                case "-p":
+                case "--pack":
+                    if (args.Length < 3)
+                    {
+                        Console.WriteLine("Error: Not enough arguments");
+                        Program.DisplayHelp();
+
+                        return;
+                    }
+                    Program.PackFiles(args[1], args[2]);
                     break;
                 default:
                     Program.DisplayHelp();
@@ -93,6 +104,74 @@ namespace LzarcTool
             Console.WriteLine("Extraction done.");
         }
 
+        static void PackFiles(string directoryPath, string outFile)
+        {
+            LzarcFile? lzarcFile = Program.ReadFromDirectory(directoryPath);
+
+            if (lzarcFile == null)
+            {
+                return;
+            }
+
+            Stream stream = File.Create(outFile);
+            BigEndianBinaryWriter writer = new BigEndianBinaryWriter(stream);
+
+            writer.Write(lzarcFile.FileSize);
+            writer.Write(lzarcFile.DecompressedSize);
+            writer.Write(lzarcFile.FileCount);
+            uint dataStartPos = LzarcFile.CalcAlignedSize(
+                LzarcFile.HEADER_SIZE + LzarcFile.ENTRY_SIZE * lzarcFile.FileCount,
+                LzarcFile.COMPRESSED_ALIGNEMENT
+            );
+            uint compressedDataPos = dataStartPos;
+            uint decompressedDataPos = LzarcFile.DECOMPRESSED_ALIGNEMENT;
+            List<byte> data = new List<byte>();
+
+            foreach (FileEntry entry in lzarcFile.Files)
+            {
+                writer.Write(entry.FileName);
+                for (int i = 0; i < 128 - entry.FileName.Length; i++)
+                {
+                    writer.Write((byte)0);
+                }
+                writer.Write(compressedDataPos);
+                writer.Write(entry.CompressedSize);
+                writer.Write(decompressedDataPos);
+                writer.Write(entry.DecompressedSize);
+                writer.Write(entry.DecompressedSize);
+                data.AddRange(entry.CompressedFileData);
+
+                uint posPadding = LzarcFile.CalcAlignedSize(
+                    entry.CompressedSize,
+                    LzarcFile.COMPRESSED_ALIGNEMENT
+                ) - entry.CompressedSize;
+
+                for (int i = 0; i < posPadding; i++)
+                {
+                    data.Add((byte)0);
+                }
+
+                compressedDataPos += entry.CompressedSize + posPadding;
+                decompressedDataPos += LzarcFile.CalcAlignedSize(
+                    entry.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNEMENT,
+                    LzarcFile.DECOMPRESSED_ALIGNEMENT
+                );
+            }
+
+            uint sectionPadding = dataStartPos - (uint)writer.BaseStream.Position;
+            for (int i = 0; i < sectionPadding; i++)
+            {
+                writer.Write((byte)0);
+            }
+
+            foreach (byte value in data)
+            {
+                writer.Write(value);
+            }
+
+            writer.Dispose();
+        }
+
         static LzarcFile? ReadFromFile(string filePath)
         {
             if (!File.Exists(filePath))
@@ -136,6 +215,36 @@ namespace LzarcTool
             }
 
             reader.Dispose();
+
+            return lzarcFile;
+        }
+
+        static LzarcFile? ReadFromDirectory(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Console.WriteLine("Error: Specified directory doesn't exist");
+
+                return null;
+            }
+
+            LzarcFile lzarcFile = new LzarcFile();
+            string[] files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                FileEntry entry = new FileEntry();
+                entry.DecompressedFileData = File.ReadAllBytes(files[i]);
+                entry.CompressedFileData = LZ77.Compress(entry.DecompressedFileData);
+
+                files[i] = Path.GetRelativePath(directoryPath, files[i])
+                    .Replace("\\", "/");
+                Console.WriteLine($"Found file: {files[i]}");
+                entry.FileName = files[i];
+
+                lzarcFile.Files.Add(entry);
+            }
+
 
             return lzarcFile;
         }

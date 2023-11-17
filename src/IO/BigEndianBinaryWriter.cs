@@ -19,10 +19,18 @@ namespace LzarcTool.IO
 
         public override void Write(uint value)
         {
-            Span<byte> buffer = new Span<byte>();
+            byte[] buffer = new byte[sizeof(uint)];
             BinaryPrimitives.WriteUInt32BigEndian(buffer, value);
 
             base.Write(buffer);
+        }
+
+        public override void Write(string value)
+        {
+            foreach (char val in value)
+            {
+                base.Write(val);
+            }
         }
     }
 }
