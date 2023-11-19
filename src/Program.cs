@@ -113,6 +113,8 @@ namespace LzarcTool
                 return;
             }
 
+            lzarcFile.Files.Sort((file1, file2) => file1.CompressedSize.CompareTo(file2.CompressedSize));
+
             Stream stream = File.Create(outFile);
             BigEndianBinaryWriter writer = new BigEndianBinaryWriter(stream);
 
@@ -129,6 +131,7 @@ namespace LzarcTool
 
             foreach (FileEntry entry in lzarcFile.Files)
             {
+                Console.WriteLine($"Processing file: {entry.FileName}");
                 writer.Write(entry.FileName);
                 for (int i = 0; i < 128 - entry.FileName.Length; i++)
                 {
@@ -139,6 +142,7 @@ namespace LzarcTool
                 writer.Write(decompressedDataPos);
                 writer.Write(entry.DecompressedSize);
                 writer.Write(entry.DecompressedSize);
+
                 data.AddRange(entry.CompressedFileData);
 
                 uint posPadding = LzarcFile.CalcAlignedSize(
@@ -235,12 +239,15 @@ namespace LzarcTool
             {
                 FileEntry entry = new FileEntry();
                 entry.DecompressedFileData = File.ReadAllBytes(files[i]);
-                entry.CompressedFileData = LZ77.Compress(entry.DecompressedFileData);
 
                 files[i] = Path.GetRelativePath(directoryPath, files[i])
                     .Replace("\\", "/");
                 Console.WriteLine($"Found file: {files[i]}");
                 entry.FileName = files[i];
+
+                Console.WriteLine("Compressing file...");
+                entry.CompressedFileData = LZ77.Compress(entry.DecompressedFileData);
+                Console.WriteLine("Compression done");
 
                 lzarcFile.Files.Add(entry);
             }
