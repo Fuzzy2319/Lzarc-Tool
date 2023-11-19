@@ -55,7 +55,19 @@ namespace LzarcTool
 
         static void DisplayHelp()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Usage: Lzarc_Tool [-l/--list] [-x/--extract] [-p/--pack] ...");
+            Console.WriteLine();
+            Console.WriteLine("-l/--list: list the files in given archive");
+            Console.WriteLine("Ex: Lzarc_Tool -l ./Fld_AD_Town_map.lzarc");
+            Console.WriteLine("Ex: Lzarc_Tool --list ./Fld_AD_Town_map.lzarc");
+            Console.WriteLine();
+            Console.WriteLine("-x/--extract: extract the files from an arc hive to the given directory");
+            Console.WriteLine("Ex: Lzarc_Tool -x ./Fld_AD_Town_map.lzarc ./Fld_AD_Town_map/");
+            Console.WriteLine("Ex: Lzarc_Tool --extract ./Fld_AD_Town_map.lzarc ./Fld_AD_Town_map/");
+            Console.WriteLine();
+            Console.WriteLine("-p/--pack: pack a directory into a new archive");
+            Console.WriteLine("Ex: Lzarc_Tool -p /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
+            Console.WriteLine("Ex: Lzarc_Tool --pack /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
         }
 
         static void ListFiles(string filePath)
