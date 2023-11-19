@@ -1,5 +1,7 @@
 # Lzarc Tool
+A C# CLI for working with Paper Mario Color Splash archives
 
+```
 Usage: Lzarc_Tool [-l/--list] [-x/--extract] [-p/--pack] ...
 
 -l/--list: list the files in given archive
@@ -11,3 +13,4 @@ Ex: Lzarc_Tool --extract ./Fld_AD_Town_map.lzarc ./Fld_AD_Town_map
 -p/--pack: pack a directory into a new archive
 Ex: Lzarc_Tool -p /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc
 Ex: Lzarc_Tool --pack /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc
+```
