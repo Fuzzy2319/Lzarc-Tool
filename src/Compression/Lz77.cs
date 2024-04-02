@@ -4,7 +4,7 @@ using System.IO.Compression;
 
 namespace LzarcTool.Compression
 {
-    public class LZ77
+    public static class Lz77
     {
         public static byte[] Decompress(byte[] input, int decompSize)
         {
@@ -17,8 +17,7 @@ namespace LzarcTool.Compression
 
         public static byte[] Compress(byte[] input)
         {
-            // TODO implement LZ77 type 11 compression
-            List<byte> output = new List<byte>();
+            List<byte> output = [];
             byte[] header = new byte[sizeof(uint)];
 
             BinaryPrimitives.WriteUInt32LittleEndian(header, (uint)input.Length);

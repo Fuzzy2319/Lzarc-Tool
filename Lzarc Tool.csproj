@@ -1,26 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
-        <PublishSingleFile>true</PublishSingleFile>
-        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-        <SelfContained>true</SelfContained>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <AssemblyName>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
         <Deterministic>False</Deterministic>
-        <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-        <WarningLevel>9999</WarningLevel>
-        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-        <StartupObject>LzarcTool.Program</StartupObject>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
         <Platforms>ARM32;ARM64;x64;x86</Platforms>
         <PlatformTarget>$(Plateform)</PlatformTarget>
-        <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;linux-arm;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        <PublishSingleFile>true</PublishSingleFile>
+        <RootNamespace>LzarcTool</RootNamespace>
         <RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
-        <AssemblyName>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
-        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;linux-arm;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <SelfContained>true</SelfContained>
+        <StartupObject>LzarcTool.Program</StartupObject>
+        <TargetFramework>net8.0</TargetFramework>
+        <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+        <WarningLevel>4</WarningLevel>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">

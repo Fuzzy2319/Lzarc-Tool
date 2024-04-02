@@ -135,10 +135,10 @@ namespace LzarcTool
             writer.Write(lzarcFile.FileCount);
             uint dataStartPos = LzarcFile.CalcAlignedSize(
                 LzarcFile.HEADER_SIZE + LzarcFile.ENTRY_SIZE * lzarcFile.FileCount,
-                LzarcFile.COMPRESSED_ALIGNEMENT
+                LzarcFile.COMPRESSED_ALIGNMENT
             );
             uint compressedDataPos = dataStartPos;
-            uint decompressedDataPos = LzarcFile.DECOMPRESSED_ALIGNEMENT;
+            uint decompressedDataPos = LzarcFile.DECOMPRESSED_ALIGNMENT;
             List<byte> data = new List<byte>();
 
             foreach (FileEntry entry in lzarcFile.Files)
@@ -159,18 +159,18 @@ namespace LzarcTool
 
                 uint posPadding = LzarcFile.CalcAlignedSize(
                     entry.CompressedSize,
-                    LzarcFile.COMPRESSED_ALIGNEMENT
+                    LzarcFile.COMPRESSED_ALIGNMENT
                 ) - entry.CompressedSize;
 
                 for (int i = 0; i < posPadding; i++)
                 {
-                    data.Add((byte)0);
+                    data.Add(0);
                 }
 
                 compressedDataPos += entry.CompressedSize + posPadding;
                 decompressedDataPos += LzarcFile.CalcAlignedSize(
-                    entry.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNEMENT,
-                    LzarcFile.DECOMPRESSED_ALIGNEMENT
+                    entry.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNMENT,
+                    LzarcFile.DECOMPRESSED_ALIGNMENT
                 );
             }
 
@@ -224,7 +224,7 @@ namespace LzarcTool
                 reader.BaseStream.Seek(dataPos, SeekOrigin.Begin);
                 reader.BaseStream.Seek(8, SeekOrigin.Current);
                 entry.CompressedFileData = reader.ReadBytes((int)compressedDataSize - 8);
-                entry.DecompressedFileData = LZ77.Decompress(entry.CompressedFileData, (int)decompressedSize);
+                entry.DecompressedFileData = Lz77.Decompress(entry.CompressedFileData, (int)decompressedSize);
                 reader.BaseStream.Seek(pos, SeekOrigin.Begin);
 
                 lzarcFile.Files.Add(entry);
@@ -249,8 +249,10 @@ namespace LzarcTool
 
             for (int i = 0; i < files.Length; i++)
             {
-                FileEntry entry = new FileEntry();
-                entry.DecompressedFileData = File.ReadAllBytes(files[i]);
+                FileEntry entry = new FileEntry
+                {
+                    DecompressedFileData = File.ReadAllBytes(files[i])
+                };
 
                 files[i] = Path.GetRelativePath(directoryPath, files[i])
                     .Replace("\\", "/");
@@ -258,7 +260,7 @@ namespace LzarcTool
                 entry.FileName = files[i];
 
                 Console.WriteLine("Compressing file...");
-                entry.CompressedFileData = LZ77.Compress(entry.DecompressedFileData);
+                entry.CompressedFileData = Lz77.Compress(entry.DecompressedFileData);
                 Console.WriteLine("Compression done");
 
                 lzarcFile.Files.Add(entry);
