@@ -33,18 +33,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include=".editorconfig" />
-        <None Include=".gitignore" />
-        <None Include="LICENSE" />
-        <None Include="README.md" />
-        <None Include="Properties/*" />
-        <None Include="test_assets/*" />
-        <Compile Include="src/**" />
-        <None Include="assets/*" />
+        <Compile Include="src/**"/>
+        <None Include=".editorconfig"/>
+        <None Include=".github/**"/>
+        <None Include=".gitignore"/>
+        <None Include="assets/**"/>
+        <None Include="LICENSE"/>
+        <None Include="Properties/*"/>
+        <None Include="README.md"/>
+        <None Include="test_assets/*"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AuroraLib.Compression" Version="1.0.6" />
+        <PackageReference Include="AuroraLib.Compression" Version="1.0.6"/>
     </ItemGroup>
 
 </Project>

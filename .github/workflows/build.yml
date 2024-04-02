@@ -1,0 +1,15 @@
+name: build
+on:
+    push:
+        tags:
+            - v*
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   uses: actions/setup-dotnet@v3
+                with:
+                    dotnet-version: 8.x
+                    cache: true
+            -   run: dotnet restore --locked-mode
