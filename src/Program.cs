@@ -6,7 +6,7 @@ namespace LzarcTool
 {
     internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length == 0)
             {
@@ -14,15 +14,19 @@ namespace LzarcTool
 
                 return;
             }
-            switch (args[0].Trim().ToLower()) {
+
+            switch (args[0].Trim().ToLower())
+            {
                 case "-l":
                 case "--list":
-                    if (args.Length < 2) {
+                    if (args.Length < 2)
+                    {
                         Console.WriteLine("Error: Not enough arguments");
                         Program.DisplayHelp();
 
                         return;
                     }
+
                     Program.ListFiles(args[1]);
                     break;
                 case "-x":
@@ -34,6 +38,7 @@ namespace LzarcTool
 
                         return;
                     }
+
                     Program.ExtractFiles(args[1], args[2]);
                     break;
                 case "-p":
@@ -45,6 +50,7 @@ namespace LzarcTool
 
                         return;
                     }
+
                     Program.PackFiles(args[1], args[2]);
                     break;
                 default:
@@ -53,7 +59,7 @@ namespace LzarcTool
             }
         }
 
-        static void DisplayHelp()
+        private static void DisplayHelp()
         {
             Console.WriteLine("Usage: Lzarc_Tool [-l/--list] [-x/--extract] [-p/--pack] ...");
             Console.WriteLine();
@@ -70,11 +76,12 @@ namespace LzarcTool
             Console.WriteLine("Ex: Lzarc_Tool --pack /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
         }
 
-        static void ListFiles(string filePath)
+        private static void ListFiles(string filePath)
         {
             LzarcFile? lzarcFile = Program.ReadFromFile(filePath);
 
-            if (lzarcFile == null) {
+            if (lzarcFile == null)
+            {
                 return;
             }
 
@@ -88,7 +95,8 @@ namespace LzarcTool
             }
         }
 
-        static void ExtractFiles(string filePath, string outDirectory) {
+        private static void ExtractFiles(string filePath, string outDirectory)
+        {
             LzarcFile? lzarcFile = Program.ReadFromFile(filePath);
 
             if (lzarcFile == null)
@@ -110,13 +118,14 @@ namespace LzarcTool
                 {
                     Directory.CreateDirectory(dir);
                 }
+
                 File.WriteAllBytes(path, file.DecompressedFileData);
             }
 
             Console.WriteLine("Extraction done.");
         }
 
-        static void PackFiles(string directoryPath, string outFile)
+        private static void PackFiles(string directoryPath, string outFile)
         {
             LzarcFile? lzarcFile = Program.ReadFromDirectory(directoryPath);
 
@@ -134,7 +143,7 @@ namespace LzarcTool
             writer.Write(lzarcFile.DecompressedSize);
             writer.Write(lzarcFile.FileCount);
             uint dataStartPos = LzarcFile.CalcAlignedSize(
-                LzarcFile.HEADER_SIZE + LzarcFile.ENTRY_SIZE * lzarcFile.FileCount,
+                LzarcFile.HEADER_SIZE + (LzarcFile.ENTRY_SIZE * lzarcFile.FileCount),
                 LzarcFile.COMPRESSED_ALIGNMENT
             );
             uint compressedDataPos = dataStartPos;
@@ -149,6 +158,7 @@ namespace LzarcTool
                 {
                     writer.Write((byte)0);
                 }
+
                 writer.Write(compressedDataPos);
                 writer.Write(entry.CompressedSize);
                 writer.Write(decompressedDataPos);
@@ -158,9 +168,10 @@ namespace LzarcTool
                 data.AddRange(entry.CompressedFileData);
 
                 uint posPadding = LzarcFile.CalcAlignedSize(
-                    entry.CompressedSize,
-                    LzarcFile.COMPRESSED_ALIGNMENT
-                ) - entry.CompressedSize;
+                                      entry.CompressedSize,
+                                      LzarcFile.COMPRESSED_ALIGNMENT
+                                  ) -
+                                  entry.CompressedSize;
 
                 for (int i = 0; i < posPadding; i++)
                 {
@@ -188,7 +199,7 @@ namespace LzarcTool
             writer.Dispose();
         }
 
-        static LzarcFile? ReadFromFile(string filePath)
+        private static LzarcFile? ReadFromFile(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -235,7 +246,7 @@ namespace LzarcTool
             return lzarcFile;
         }
 
-        static LzarcFile? ReadFromDirectory(string directoryPath)
+        private static LzarcFile? ReadFromDirectory(string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
             {
@@ -246,26 +257,36 @@ namespace LzarcTool
 
             LzarcFile lzarcFile = new LzarcFile();
             string[] files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+            List<Task> tasks = [];
 
             for (int i = 0; i < files.Length; i++)
             {
-                FileEntry entry = new FileEntry
-                {
-                    DecompressedFileData = File.ReadAllBytes(files[i])
-                };
+                tasks.Add(
+                    Task.Factory.StartNew(
+                        f =>
+                        {
+                            FileEntry entry = new FileEntry
+                            {
+                                DecompressedFileData = File.ReadAllBytes((string)f!)
+                            };
 
-                files[i] = Path.GetRelativePath(directoryPath, files[i])
-                    .Replace("\\", "/");
-                Console.WriteLine($"Found file: {files[i]}");
-                entry.FileName = files[i];
+                            f = Path.GetRelativePath(directoryPath, (string)f!)
+                                .Replace("\\", "/");
+                            Console.WriteLine($"Found file: {f}");
+                            entry.FileName = (string)f;
 
-                Console.WriteLine("Compressing file...");
-                entry.CompressedFileData = Lz77.Compress(entry.DecompressedFileData);
-                Console.WriteLine("Compression done");
+                            Console.WriteLine($"Compressing file {entry.FileName}...");
+                            entry.CompressedFileData = Lz77.Compress(entry.DecompressedFileData);
+                            Console.WriteLine($"Compression for {entry.FileName} done");
 
-                lzarcFile.Files.Add(entry);
+                            lzarcFile.Files.Add(entry);
+                        },
+                        files[i]
+                    )
+                );
             }
 
+            Task.WaitAll(tasks.ToArray());
 
             return lzarcFile;
         }
