@@ -255,12 +255,9 @@ namespace LzarcTool
             LzarcFile lzarcFile = new LzarcFile();
             string[] files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
             List<Task> tasks = [];
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                tasks.Add(
-                    Task.Factory.StartNew(
-                        f =>
+            tasks.AddRange(
+                files.Select(
+                    file => Task.Factory.StartNew(f =>
                         {
                             FileEntry entry = new FileEntry
                             {
@@ -277,10 +274,10 @@ namespace LzarcTool
 
                             lzarcFile.Files.Add(entry);
                         },
-                        files[i]
+                        file
                     )
-                );
-            }
+                )
+            );
 
             Task.WaitAll(tasks.ToArray());
             Console.WriteLine("Compression: done");
