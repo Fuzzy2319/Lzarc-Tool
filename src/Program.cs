@@ -104,14 +104,11 @@ namespace LzarcTool
                 return;
             }
 
-            if (!Directory.Exists(outDirectory))
-            {
-                Directory.CreateDirectory(outDirectory);
-            }
+            Directory.CreateDirectory(outDirectory);
 
             foreach (FileEntry file in lzarcFile.Files)
             {
-                Console.WriteLine($"Extracting {file.FileName}...");
+                Console.WriteLine($"Extracting: {file.FileName}...");
                 string path = Path.Combine(outDirectory, file.FileName);
                 string? dir = Path.GetDirectoryName(path);
                 if (dir != null && !Directory.Exists(dir))
@@ -272,12 +269,11 @@ namespace LzarcTool
 
                             f = Path.GetRelativePath(directoryPath, (string)f!)
                                 .Replace("\\", "/");
-                            Console.WriteLine($"Found file: {f}");
                             entry.FileName = (string)f;
 
-                            Console.WriteLine($"Compressing file {entry.FileName}...");
+                            Console.WriteLine($"Compressing file: {entry.FileName}...");
                             entry.CompressedFileData = Lz77.Compress(entry.DecompressedFileData);
-                            Console.WriteLine($"Compression for {entry.FileName} done");
+                            Console.WriteLine($"Compression for: {entry.FileName} done");
 
                             lzarcFile.Files.Add(entry);
                         },
@@ -287,6 +283,7 @@ namespace LzarcTool
             }
 
             Task.WaitAll(tasks.ToArray());
+            Console.WriteLine("Compression: done");
 
             return lzarcFile;
         }
