@@ -1,3 +1,4 @@
+using System.Reflection;
 using LzarcTool.Compression;
 using LzarcTool.FileFormat;
 using LzarcTool.IO;
@@ -53,6 +54,17 @@ namespace LzarcTool
 
                     Program.PackFiles(args[1], args[2]);
                     break;
+                case "--init-project":
+                    if (args.Length < 3)
+                    {
+                        Console.WriteLine("Error: Not enough arguments");
+                        Program.DisplayHelp();
+
+                        return;
+                    }
+
+                    Program.InitProject(args[1], args[2]);
+                    break;
                 default:
                     Program.DisplayHelp();
                     break;
@@ -61,19 +73,24 @@ namespace LzarcTool
 
         private static void DisplayHelp()
         {
-            Console.WriteLine("Usage: Lzarc_Tool [-l/--list] [-x/--extract] [-p/--pack] ...");
+            Console.WriteLine("Usage: Lzarc_Tool [-l/--list] [-x/--extract] [-p/--pack] [--init-project] ...");
             Console.WriteLine();
             Console.WriteLine("-l/--list: list the files in given archive");
             Console.WriteLine("Ex: Lzarc_Tool -l ./Fld_AD_Town_map.lzarc");
             Console.WriteLine("Ex: Lzarc_Tool --list ./Fld_AD_Town_map.lzarc");
             Console.WriteLine();
-            Console.WriteLine("-x/--extract: extract the files from an arc hive to the given directory");
+            Console.WriteLine("-x/--extract: extract the files from an archive to the given directory");
             Console.WriteLine("Ex: Lzarc_Tool -x ./Fld_AD_Town_map.lzarc ./Fld_AD_Town_map/");
             Console.WriteLine("Ex: Lzarc_Tool --extract ./Fld_AD_Town_map.lzarc ./Fld_AD_Town_map/");
             Console.WriteLine();
             Console.WriteLine("-p/--pack: pack a directory into a new archive");
-            Console.WriteLine("Ex: Lzarc_Tool -p /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
-            Console.WriteLine("Ex: Lzarc_Tool --pack /Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
+            Console.WriteLine("Ex: Lzarc_Tool -p ./Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
+            Console.WriteLine("Ex: Lzarc_Tool --pack ./Fld_TN_PostOffice_map/ ./Fld_TN_PostOffice_map_repack.lzarc");
+            Console.WriteLine();
+            Console.WriteLine(
+                "--init-project: blank all lzarc files from the game directory and copy them to a project"
+            );
+            Console.WriteLine("EX: Lzarc_Tool --init-project /games/PMCS/content/ ./content/");
         }
 
         private static void ListFiles(string filePath)
@@ -164,11 +181,9 @@ namespace LzarcTool
 
                 data.AddRange(entry.CompressedFileData);
 
-                uint posPadding = LzarcFile.CalcAlignedSize(
-                                      entry.CompressedSize,
-                                      LzarcFile.COMPRESSED_ALIGNMENT
-                                  ) -
-                                  entry.CompressedSize;
+                uint posPadding =
+                    LzarcFile.CalcAlignedSize(entry.CompressedSize, LzarcFile.COMPRESSED_ALIGNMENT) -
+                    entry.CompressedSize;
 
                 for (int i = 0; i < posPadding; i++)
                 {
@@ -194,6 +209,44 @@ namespace LzarcTool
             }
 
             writer.Dispose();
+        }
+
+        private static void InitProject(string gamePath, string projectPath)
+        {
+            string assetsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)! +
+                                Path.DirectorySeparatorChar +
+                                "assets" +
+                                Path.DirectorySeparatorChar;
+            gamePath += "arc";
+
+            if (!Directory.Exists(gamePath))
+            {
+                Console.WriteLine("Error: Game directory is invalid");
+
+                return;
+            }
+
+            Directory.CreateDirectory(projectPath + "arc" + Path.DirectorySeparatorChar);
+
+            IEnumerable<string> files = Directory.EnumerateFiles(gamePath, "*.lzarc");
+
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+
+                File.Copy(
+                    assetsPath + "dummy.lzarc",
+                    projectPath + "arc" + Path.DirectorySeparatorChar + fileName,
+                    true
+                );
+
+                if (fileName.EndsWith("_map.lzarc"))
+                {
+                    Program.ExtractFiles(file, projectPath);
+                }
+            }
+
+            Directory.Delete(projectPath + "Graphics" + Path.DirectorySeparatorChar + "DisposObject", true);
         }
 
         private static LzarcFile? ReadFromFile(string filePath)

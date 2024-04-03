@@ -37,7 +37,7 @@
         <None Include=".editorconfig"/>
         <None Include=".github/**"/>
         <None Include=".gitignore"/>
-        <None Include="assets/**"/>
+        <None Include="assets/**" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
         <None Include="LICENSE"/>
         <None Include="Properties/*"/>
         <None Include="README.md"/>
