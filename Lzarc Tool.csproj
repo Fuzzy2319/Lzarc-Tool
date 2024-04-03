@@ -10,13 +10,11 @@
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
-        <Platforms>ARM32;ARM64;x64;x86</Platforms>
-        <PlatformTarget>$(Plateform)</PlatformTarget>
         <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
         <PublishSingleFile>true</PublishSingleFile>
         <RootNamespace>LzarcTool</RootNamespace>
         <RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
-        <RuntimeIdentifiers>win-x64;win-x86;win-arm64;linux-x64;linux-arm64;linux-arm;osx-x64;osx-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
         <StartupObject>LzarcTool.Program</StartupObject>
         <TargetFramework>net8.0</TargetFramework>

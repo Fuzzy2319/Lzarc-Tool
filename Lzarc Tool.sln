@@ -7,32 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lzarc Tool", "Lzarc Tool.cs
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|ARM32 = Debug|ARM32
-		Debug|ARM64 = Debug|ARM64
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|ARM32 = Release|ARM32
-		Release|ARM64 = Release|ARM64
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|ARM32.ActiveCfg = Debug|ARM32
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|ARM32.Build.0 = Debug|ARM32
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|ARM64.ActiveCfg = Debug|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|ARM64.Build.0 = Debug|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|x64.ActiveCfg = Debug|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|x64.Build.0 = Debug|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|x86.ActiveCfg = Debug|x86
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|x86.Build.0 = Debug|x86
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|ARM32.ActiveCfg = Release|ARM32
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|ARM32.Build.0 = Release|ARM32
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|ARM64.ActiveCfg = Release|ARM64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|ARM64.Build.0 = Release|ARM64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|x64.ActiveCfg = Release|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|x64.Build.0 = Release|x64
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|x86.ActiveCfg = Release|x86
-		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|x86.Build.0 = Release|x86
+		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0692A2D-7D5C-49A8-BEB0-A1DDCA2152C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

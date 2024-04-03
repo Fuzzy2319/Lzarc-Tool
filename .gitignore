@@ -1,7 +1,7 @@
 .idea/
 bin/
 obj/
+Properties/
 test_assets/
 
 *.user
-launchSettings.json
