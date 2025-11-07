@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using LzarcTool.Compression;
 using LzarcTool.FileFormat;
 using LzarcTool.IO;
@@ -157,12 +162,12 @@ namespace LzarcTool
             writer.Write(lzarcFile.DecompressedSize);
             writer.Write(lzarcFile.FileCount);
             uint dataStartPos = LzarcFile.CalcAlignedSize(
-                LzarcFile.HEADER_SIZE + (LzarcFile.ENTRY_SIZE * lzarcFile.FileCount),
+                LzarcFile.HEADER_SIZE + LzarcFile.ENTRY_SIZE * lzarcFile.FileCount,
                 LzarcFile.COMPRESSED_ALIGNMENT
             );
             uint compressedDataPos = dataStartPos;
             uint decompressedDataPos = LzarcFile.DECOMPRESSED_ALIGNMENT;
-            List<byte> data = new List<byte>();
+            List<byte> data = [];
 
             foreach (FileEntry entry in lzarcFile.Files)
             {
@@ -214,9 +219,9 @@ namespace LzarcTool
         private static void InitProject(string gamePath, string projectPath)
         {
             string assetsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)! +
-                                Path.DirectorySeparatorChar +
-                                "assets" +
-                                Path.DirectorySeparatorChar;
+                Path.DirectorySeparatorChar +
+                "assets" +
+                Path.DirectorySeparatorChar;
             gamePath += "arc";
 
             if (!Directory.Exists(gamePath))

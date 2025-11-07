@@ -1,5 +1,7 @@
 using AuroraLib.Compression.Algorithms;
 using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 
 namespace LzarcTool.Compression
@@ -10,7 +12,7 @@ namespace LzarcTool.Compression
         {
             MemoryStream output = new MemoryStream(decompSize);
 
-            LZ11.DecompressHeaderless(new MemoryStream(input), output, output.Capacity);
+            LZ11.DecompressHeaderless(new MemoryStream(input), output, (uint)output.Capacity);
 
             return output.GetBuffer()[..(int)output.Length];
         }
@@ -25,11 +27,11 @@ namespace LzarcTool.Compression
             {
                 header[i] = header[i - 1];
             }
-            header[0] = 19; // file magic 0x13
+            header[0] = 0x13; // file magic 0x13
 
             output.AddRange(header);
 
-            header[0] = 17; // file magic 0x11
+            header[0] = 0x11; // file magic 0x11
 
             output.AddRange(header);
 

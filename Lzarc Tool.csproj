@@ -1,33 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <AssemblyName>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyName>
         <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-        <Deterministic>False</Deterministic>
+        <Deterministic>false</Deterministic>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
-        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
         <PublishSingleFile>true</PublishSingleFile>
         <RootNamespace>LzarcTool</RootNamespace>
         <RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
         <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
-        <StartupObject>LzarcTool.Program</StartupObject>
-        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>$(MSBuildProjectName.Replace(" ", ""))</RootNamespace>
+        <StartupObject>$(MSBuildProjectName.Replace(" ", "")).Program</StartupObject>
+        <TargetFramework>net9.0</TargetFramework>
         <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <DebugType>embedded</DebugType>
+        <Optimize>false</Optimize>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <DebugType>None</DebugType>
+        <Optimize>true</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
@@ -43,7 +46,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AuroraLib.Compression" Version="1.0.6"/>
+        <PackageReference Include="AuroraLib.Compression" Version="1.5.3"/>
     </ItemGroup>
-
 </Project>

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace LzarcTool.FileFormat
 {
     public class LzarcFile
@@ -7,20 +10,17 @@ namespace LzarcTool.FileFormat
         public const uint ENTRY_SIZE = 148; // Every file entry is 148 bytes
         public const uint HEADER_SIZE = 12; // Header is 12 bytes
 
-        public LzarcFile()
-        {
-            this.Files = new List<FileEntry>();
-        }
-
         public uint FileSize
         {
-            get => (uint)this.Files.Sum(file => CalcAlignedSize(file.CompressedSize, LzarcFile.COMPRESSED_ALIGNMENT))
-                + CalcAlignedSize(HEADER_SIZE + ENTRY_SIZE * this.FileCount, LzarcFile.COMPRESSED_ALIGNMENT);
+            get => (uint)this.Files.Sum(file => LzarcFile.CalcAlignedSize(file.CompressedSize, LzarcFile.COMPRESSED_ALIGNMENT))
+                + LzarcFile.CalcAlignedSize(LzarcFile.HEADER_SIZE + LzarcFile.ENTRY_SIZE * this.FileCount, LzarcFile.COMPRESSED_ALIGNMENT);
         }
 
         public uint DecompressedSize
         {
-            get => (uint)this.Files.Sum(file => CalcAlignedSize(file.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNMENT, LzarcFile.DECOMPRESSED_ALIGNMENT))
+            get => (uint)this.Files.Sum(file =>
+                    LzarcFile.CalcAlignedSize(file.DecompressedSize + LzarcFile.DECOMPRESSED_ALIGNMENT, LzarcFile.DECOMPRESSED_ALIGNMENT)
+                )
                 + LzarcFile.DECOMPRESSED_ALIGNMENT;
         }
 
@@ -30,6 +30,11 @@ namespace LzarcTool.FileFormat
         }
 
         public List<FileEntry> Files { get; }
+
+        public LzarcFile()
+        {
+            this.Files = [];
+        }
 
         public static uint CalcAlignedSize(uint len, uint alignment)
         {
