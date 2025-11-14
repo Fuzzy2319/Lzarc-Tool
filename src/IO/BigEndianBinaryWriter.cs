@@ -1,3 +1,4 @@
+using System;
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
@@ -20,7 +21,7 @@ namespace LzarcTool.IO
 
         public override void Write(uint value)
         {
-            byte[] buffer = new byte[sizeof(uint)];
+            Span<byte> buffer = stackalloc byte[sizeof(uint)];
             BinaryPrimitives.WriteUInt32BigEndian(buffer, value);
 
             base.Write(buffer);

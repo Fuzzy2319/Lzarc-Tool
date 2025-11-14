@@ -1,4 +1,5 @@
 using AuroraLib.Compression.Algorithms;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +11,10 @@ namespace LzarcTool.Compression
     {
         public static byte[] Decompress(byte[] input, int decompSize)
         {
-            MemoryStream output = new MemoryStream(decompSize);
+            using MemoryStream output = new MemoryStream(decompSize);
+            using MemoryStream buf = new MemoryStream(input);
 
-            LZ11.DecompressHeaderless(new MemoryStream(input), output, (uint)output.Capacity);
+            LZ11.DecompressHeaderless(buf, output, (uint)output.Capacity);
 
             return output.GetBuffer()[..(int)output.Length];
         }
@@ -20,7 +22,7 @@ namespace LzarcTool.Compression
         public static byte[] Compress(byte[] input)
         {
             List<byte> output = [];
-            byte[] header = new byte[sizeof(uint)];
+            Span<byte> header = stackalloc byte[sizeof(uint)];
 
             BinaryPrimitives.WriteUInt32LittleEndian(header, (uint)input.Length);
             for (int i = header.Length - 1; i > 0; i--)
@@ -35,7 +37,7 @@ namespace LzarcTool.Compression
 
             output.AddRange(header);
 
-            MemoryStream buf = new MemoryStream();
+            using MemoryStream buf = new MemoryStream();
             LZ11.CompressHeaderless(input, buf, true, CompressionLevel.SmallestSize);
 
             output.AddRange(buf.GetBuffer()[..(int)buf.Length]);

@@ -133,7 +133,7 @@ namespace LzarcTool
                 Console.WriteLine($"Extracting: {file.FileName}...");
                 string path = Path.Combine(outDirectory, file.FileName);
                 string? dir = Path.GetDirectoryName(path);
-                if (dir != null && !Directory.Exists(dir))
+                if (dir is not null && !Directory.Exists(dir))
                 {
                     Directory.CreateDirectory(dir);
                 }
@@ -155,8 +155,8 @@ namespace LzarcTool
 
             lzarcFile.Files.Sort((file1, file2) => file1.CompressedSize.CompareTo(file2.CompressedSize));
 
-            Stream stream = File.Create(outFile);
-            BigEndianBinaryWriter writer = new BigEndianBinaryWriter(stream);
+            using Stream stream = File.Create(outFile);
+            using BigEndianBinaryWriter writer = new BigEndianBinaryWriter(stream);
 
             writer.Write(lzarcFile.FileSize);
             writer.Write(lzarcFile.DecompressedSize);
@@ -213,15 +213,14 @@ namespace LzarcTool
                 writer.Write(value);
             }
 
-            writer.Dispose();
         }
 
         private static void InitProject(string gamePath, string projectPath)
         {
-            string assetsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)! +
-                Path.DirectorySeparatorChar +
-                "assets" +
-                Path.DirectorySeparatorChar;
+            string assetsPath = string.Format("{0}{1}assets{1}",
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
+                Path.DirectorySeparatorChar
+            );
             gamePath += "arc";
 
             if (!Directory.Exists(gamePath))
@@ -263,8 +262,8 @@ namespace LzarcTool
                 return null;
             }
 
-            Stream stream = File.OpenRead(filePath);
-            BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
+            using Stream stream = File.OpenRead(filePath);
+            using BigEndianBinaryReader reader = new BigEndianBinaryReader(stream);
             LzarcFile lzarcFile = new LzarcFile();
 
             // Skip FileSize && DecompressedSize
@@ -295,8 +294,6 @@ namespace LzarcTool
 
                 lzarcFile.Files.Add(entry);
             }
-
-            reader.Dispose();
 
             return lzarcFile;
         }
