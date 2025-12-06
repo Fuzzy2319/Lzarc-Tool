@@ -29,6 +29,7 @@ namespace LzarcTool.Compression
             {
                 header[i] = header[i - 1];
             }
+
             header[0] = 0x13; // file magic 0x13
 
             output.AddRange(header);

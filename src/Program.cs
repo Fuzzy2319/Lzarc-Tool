@@ -1,12 +1,12 @@
+using LzarcTool.Compression;
+using LzarcTool.FileFormat;
+using LzarcTool.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using LzarcTool.Compression;
-using LzarcTool.FileFormat;
-using LzarcTool.IO;
 
 namespace LzarcTool
 {
@@ -187,8 +187,8 @@ namespace LzarcTool
                 data.AddRange(entry.CompressedFileData);
 
                 uint posPadding =
-                    LzarcFile.CalcAlignedSize(entry.CompressedSize, LzarcFile.COMPRESSED_ALIGNMENT) -
-                    entry.CompressedSize;
+                    LzarcFile.CalcAlignedSize(entry.CompressedSize, LzarcFile.COMPRESSED_ALIGNMENT)
+                    - entry.CompressedSize;
 
                 for (int i = 0; i < posPadding; i++)
                 {
@@ -212,7 +212,6 @@ namespace LzarcTool
             {
                 writer.Write(value);
             }
-
         }
 
         private static void InitProject(string gamePath, string projectPath)
@@ -311,8 +310,7 @@ namespace LzarcTool
             string[] files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
             List<Task> tasks = [];
             tasks.AddRange(
-                files.Select(
-                    file => Task.Factory.StartNew(f =>
+                files.Select(file => Task.Factory.StartNew(f =>
                         {
                             FileEntry entry = new FileEntry
                             {

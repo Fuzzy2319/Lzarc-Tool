@@ -4,15 +4,9 @@ namespace LzarcTool.FileFormat
     {
         public string FileName { get; set; }
 
-        public uint CompressedSize
-        {
-            get => (uint)this.CompressedFileData.Length;
-        }
+        public uint CompressedSize => (uint)this.CompressedFileData.Length;
 
-        public uint DecompressedSize
-        {
-            get => (uint)this.DecompressedFileData.Length;
-        }
+        public uint DecompressedSize => (uint)this.DecompressedFileData.Length;
 
         public byte[] CompressedFileData { get; set; }
 
