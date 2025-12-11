@@ -2,21 +2,37 @@ namespace LzarcTool.FileFormat
 {
     public class FileEntry
     {
-        public string FileName { get; set; }
+        private byte[] _compressedFileData;
+        private byte[] _decompressedFileData;
+        private string _fileName;
 
-        public uint CompressedSize => (uint)this.CompressedFileData.Length;
+        public string FileName
+        {
+            get => this._fileName;
+            set => this._fileName = value;
+        }
 
-        public uint DecompressedSize => (uint)this.DecompressedFileData.Length;
+        public uint CompressedSize => (uint)this._compressedFileData.Length;
 
-        public byte[] CompressedFileData { get; set; }
+        public uint DecompressedSize => (uint)this._decompressedFileData.Length;
 
-        public byte[] DecompressedFileData { get; set; }
+        public byte[] CompressedFileData
+        {
+            get => this._compressedFileData;
+            set => this._compressedFileData = value;
+        }
+
+        public byte[] DecompressedFileData
+        {
+            get => this._decompressedFileData;
+            set => this._decompressedFileData = value;
+        }
 
         public FileEntry()
         {
-            this.FileName = "";
-            this.CompressedFileData = [];
-            this.DecompressedFileData = [];
+            this._fileName = "";
+            this._compressedFileData = [];
+            this._decompressedFileData = [];
         }
     }
 }
